@@ -1,0 +1,267 @@
+let devocionales = [
+{
+    titulo: "Confía en Dios",
+    versiculo: "Proverbios 3:5",
+    reflexion: "Confía en el Señor con todo tu corazón y no te apoyes en tu propia prudencia.",
+    oracion: "Señor, ayúdame a confiar en Ti completamente."
+},
+{
+    titulo: "Fortaleza en Cristo",
+    versiculo: "Filipenses 4:13",
+    reflexion: "Todo lo puedo en Cristo que me fortalece.",
+    oracion: "Dame fuerzas para seguir adelante."
+}
+];
+
+window.onload = function() {
+    let activo = localStorage.getItem("sesionActiva");
+    if(activo){
+        mostrarPanel();
+    }
+};
+
+function login(){
+    let user = loginUser.value;
+    let pass = loginPass.value;
+
+    if(user && pass){
+        localStorage.setItem("sesionActiva", user);
+        mostrarPanel();
+    } else {
+        mensaje.innerText = "Completa los campos";
+    }
+}
+
+function mostrarPanel(){
+    ocultarTodo();
+    panelScreen.classList.remove("hidden");
+}
+
+function mostrarSeccion(seccion){
+    ocultarTodo();
+
+    if(seccion === "devocionales"){
+        devocionalesScreen.classList.remove("hidden");
+        nuevoDevocional();
+    }
+    if(seccion === "testimonios"){
+        testimoniosScreen.classList.remove("hidden");
+        cargarTestimonios();
+    }
+    if(seccion === "oracion"){
+        oracionScreen.classList.remove("hidden");
+        cargarOraciones();
+    }
+    if(seccion === "predicas"){
+        predicasScreen.classList.remove("hidden");
+    }
+}
+
+function volverPanel(){
+    mostrarPanel();
+}
+
+function ocultarTodo(){
+    loginScreen.classList.add("hidden");
+    panelScreen.classList.add("hidden");
+    devocionalesScreen.classList.add("hidden");
+    testimoniosScreen.classList.add("hidden");
+    oracionScreen.classList.add("hidden");
+    predicasScreen.classList.add("hidden");
+}
+
+function nuevoDevocional(){
+    let random = devocionales[Math.floor(Math.random()*devocionales.length)];
+    tituloDevocional.innerText = random.titulo;
+    versiculo.innerText = random.versiculo;
+    reflexion.innerText = random.reflexion;
+    oracionTexto.innerText = "Oración: " + random.oracion;
+}
+
+function guardarTestimonio(){
+    let texto = testimonioInput.value;
+    if(!texto) return;
+
+    let lista = JSON.parse(localStorage.getItem("testimonios")) || [];
+    lista.push(texto);
+    localStorage.setItem("testimonios", JSON.stringify(lista));
+    testimonioInput.value="";
+    cargarTestimonios();
+}
+
+function cargarTestimonios(){
+    let lista = JSON.parse(localStorage.getItem("testimonios")) || [];
+    listaTestimonios.innerHTML="";
+    lista.forEach(t=>{
+        listaTestimonios.innerHTML += `<div class="card">${t}</div>`;
+    });
+}
+
+function guardarOracion(){
+    let texto = oracionInput.value;
+    if(!texto) return;
+
+    let lista = JSON.parse(localStorage.getItem("oraciones")) || [];
+    lista.push(texto);
+    localStorage.setItem("oraciones", JSON.stringify(lista));
+    oracionInput.value="";
+    cargarOraciones();
+}
+
+function cargarOraciones(){
+    let lista = JSON.parse(localStorage.getItem("oraciones")) || [];
+    listaOraciones.innerHTML="";
+    lista.forEach(o=>{
+        listaOraciones.innerHTML += `<div class="card">🙏 ${o}</div>`;
+    });
+}
+
+function cerrarSesion(){
+    localStorage.removeItem("sesionActiva");
+    location.reload();
+}
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#4e73df,#1cc88a);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
+
+.container {
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    width:350px;
+    max-height:95vh;
+    overflow-y:auto;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+input, textarea {
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+textarea {
+    height:80px;
+    resize:none;
+}
+
+button {
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:#4e73df;
+    color:white;
+    margin-top:10px;
+    cursor:pointer;
+}
+
+button:hover {
+    background:#2e59d9;
+}
+
+.logout {
+    background:#e74a3b;
+}
+
+.card {
+    background:#f8f9fc;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:10px;
+}
+
+.hidden {
+    display:none;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camino Vivo</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- LOGIN -->
+    <div id="loginScreen">
+        <h2>Camino de Conexion 🙏</h2>
+        <input type="text" id="loginUser" placeholder="Usuario">
+        <input type="password" id="loginPass" placeholder="Contraseña">
+        <button onclick="login()">Entrar</button>
+        <p id="mensaje"></p>
+    </div>
+
+    <!-- PANEL PRINCIPAL -->
+    <div id="panelScreen" class="hidden">
+        <h2>Panel Principal</h2>
+
+        <button onclick="mostrarSeccion('devocionales')">📖 Devocionales</button>
+        <button onclick="mostrarSeccion('testimonios')">✨ Testimonios</button>
+        <button onclick="mostrarSeccion('oracion')">🙏 Oración</button>
+        <button onclick="mostrarSeccion('predicas')">🎙️ Prédicas</button>
+
+        <button class="logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+
+    <!-- SECCIÓN DEVOCIONALES -->
+    <div id="devocionalesScreen" class="hidden">
+        <h2>Devocional del Día</h2>
+        <div class="card">
+            <h3 id="tituloDevocional"></h3>
+            <p id="versiculo"></p>
+            <p id="reflexion"></p>
+            <p id="oracionTexto"></p>
+        </div>
+        <button onclick="nuevoDevocional()">Nuevo Devocional</button>
+        <button onclick="volverPanel()">⬅ Volver</button>
+    </div>
+
+    <!-- SECCIÓN TESTIMONIOS -->
+    <div id="testimoniosScreen" class="hidden">
+        <h2>Testimonios</h2>
+        <textarea id="testimonioInput" placeholder="Escribe tu testimonio"></textarea>
+        <button onclick="guardarTestimonio()">Publicar</button>
+        <div id="listaTestimonios"></div>
+        <button onclick="volverPanel()">⬅ Volver</button>
+    </div>
+
+    <!-- SECCIÓN ORACIÓN -->
+    <div id="oracionScreen" class="hidden">
+        <h2>Peticiones de Oración</h2>
+        <textarea id="oracionInput" placeholder="Escribe tu petición"></textarea>
+        <button onclick="guardarOracion()">Guardar</button>
+        <div id="listaOraciones"></div>
+        <button onclick="volverPanel()">⬅ Volver</button>
+    </div>
+
+    <!-- SECCIÓN PRÉDICAS -->
+    <div id="predicasScreen" class="hidden">
+        <h2>Prédicas</h2>
+        <div class="card">
+            <h3>La Fe que Mueve Montañas</h3>
+            <p>Una reflexión sobre Mateo 17:20 y el poder de la fe.</p>
+        </div>
+        <div class="card">
+            <h3>Esperanza en Cristo</h3>
+            <p>Un mensaje basado en Romanos 15:13.</p>
+        </div>
+        <button onclick="volverPanel()">⬅ Volver</button>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
